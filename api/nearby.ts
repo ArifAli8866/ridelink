@@ -1,12 +1,15 @@
+import { neon } from "@neondatabase/serverless";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getSql } from "./_db";
 
-/** GET /api/nearby?lat=&lng=&exclude=<myId> — returns online users within ~13km, newest first. */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   if (req.method === "OPTIONS") return res.status(204).end();
 
   try {
+    const url = process.env.DATABASE_URL;
+    if (!url) throw new Error("DATABASE_URL is not set");
+    const sql = neon(url);
+
     const lat = parseFloat(req.query.lat as string);
     const lng = parseFloat(req.query.lng as string);
     const exclude = (req.query.exclude as string) ?? "";
@@ -14,8 +17,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "Missing lat/lng" });
     }
 
-    const sql = getSql();
-    // ~0.12 deg ≈ 13 km bounding box + only users seen in the last 60s ("online")
     const rows = await sql`
       select id, name, role, destination, vehicle, eco, lat, lng
       from users

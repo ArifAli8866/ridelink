@@ -1,111 +1,339 @@
-# 🌿 RideLink — Share rides. Save money. Cut carbon.
+<div align="center">
 
-A **real, live** carpooling app. See real people heading your way on a **real map** (OpenStreetMap/CARTO), share your **live GPS**, request rides, split fuel, and track CO₂ + money saved. Empty by default, fully live once connected to a database.
+# 🌿 RideLink
 
----
+### *Share rides. Save money. Cut carbon.*
 
-## ✨ Features
-- **🗺️ Real map** (Leaflet + OpenStreetMap) — live GPS dot, accuracy circle, pan/zoom.
-- **🔴 Live multi-user** — your location is written to Neon Postgres every few seconds; you see other online users on your map instantly (within ~13 km).
-- **🧍 Empty by default** — no fake data.
-- **🤝 Full flow** — nearby → request → match → book → live trip → rate.
-- **📊 Impact** computed from real rides · **🚗 post a ride** · **💬 messages** · **👤 profile** · **🔔 notifications** · mobile + desktop responsive.
+<br/>
 
----
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-ridelink--mu.vercel.app-22c55e?style=for-the-badge)](https://ridelink-mu.vercel.app)
+[![Built with React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
+[![Powered by Neon](https://img.shields.io/badge/Database-Neon_PostgreSQL-00E699?style=for-the-badge&logo=postgresql)](https://neon.tech)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?style=for-the-badge&logo=vercel)](https://vercel.com)
 
-## 🚀 Quick deploy (frontend only — works without a DB)
-```bash
-git push origin main      # then import on vercel.com → Deploy
+<br/>
+
+> **A real-time carpooling platform** — live GPS, instant ride matching, and CO₂ impact tracking. Built for a greener, cheaper commute.
+
+<br/>
+
 ```
-Build: `npm run build` · Output: `dist`. Without a DB, the app still runs (live GPS + preview mode); you just won't see *other real people* yet.
+🗺️ Real Map  ·  🔴 Live GPS  ·  🤝 Ride Matching  ·  📊 Impact Dashboard  ·  💬 Messages
+```
+
+</div>
 
 ---
 
-# 🗄️ Connect a database — STEP BY STEP (Neon + PostgreSQL)
+## ✨ Features at a Glance
 
-This makes the map **truly live**: every phone running the app shows every other nearby phone in real time. ~10 minutes.
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        RIDELINK FEATURES                        │
+├─────────────────┬───────────────────────────────────────────────┤
+│  🗺️  Live Map    │  OpenStreetMap + Leaflet, real GPS dot        │
+│  🔴  Multi-User  │  See other riders on your map in real time   │
+│  🤝  Ride Flow   │  Post → Request → Match → Book → Rate        │
+│  📊  Impact      │  CO₂ saved, money saved, trips counted       │
+│  🚗  Post a Ride │  Set origin, destination, seats & price      │
+│  💬  Messages    │  In-app chat between riders and drivers      │
+│  👤  Profile     │  Persistent device identity, no signup       │
+│  🔔  Alerts      │  Real-time ride request notifications        │
+│  📱  Responsive  │  Mobile + desktop, works everywhere          │
+└─────────────────┴───────────────────────────────────────────────┘
+```
 
-### Step 1 — Create a free Neon database
-1. Go to **[neon.tech](https://neon.tech)** → **Sign up** (GitHub/Google).
-2. Click **Create Project** → name it `ridelink` → pick a region close to you → **Create**.
-3. On the project **Dashboard**, find the **Connection Details** box.
-4. Copy the **connection string**. It looks like:
-   ```
-   postgresql://neondb_owner:npg_xyz@ep-cool-rain-12345.us-east-2.aws.neon.tech/neondb?sslmode=require
-   ```
-   👀 Keep this secret — it's your DB password.
+---
 
-### Step 2 — Create the tables
-1. In Neon, click **SQL Editor** (left sidebar) → **New query**.
-2. Open the file **`SCHEMA.sql`** from this project, copy **all** of it, paste into the editor.
-3. Click **Run**. You should see `Create Table` success messages. ✅
+## 🖥️ Screenshots
 
-### Step 3 — Install dependencies (already done, just confirming)
+> Open the live app at **[ridelink-mu.vercel.app](https://ridelink-mu.vercel.app)** · Allow location · See people near you instantly.
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                        USER'S BROWSER                        │
+│                                                              │
+│   React 19 + TypeScript + Vite + Tailwind v4                │
+│   ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐  │
+│   │ MapView  │ │ NearbyP. │ │TripsView │ │ImpactDashbrd │  │
+│   └────┬─────┘ └────┬─────┘ └────┬─────┘ └──────┬───────┘  │
+│        └────────────┴────────────┴───────────────┘          │
+│                          │ fetch                             │
+└──────────────────────────┼───────────────────────────────────┘
+                           │
+              ┌────────────▼────────────┐
+              │     VERCEL EDGE          │
+              │  Serverless Functions    │
+              │                         │
+              │  POST /api/heartbeat    │  ← your live GPS
+              │  GET  /api/nearby       │  ← people near you
+              │  POST /api/rides        │  ← post a ride
+              │  GET  /api/rides        │  ← fetch all rides
+              │  POST /api/bookings     │  ← book a ride
+              │  GET  /api/bookings     │  ← your trips
+              └────────────┬────────────┘
+                           │ @neondatabase/serverless
+              ┌────────────▼────────────┐
+              │     NEON POSTGRES        │
+              │                         │
+              │  users    (live GPS)    │
+              │  rides    (posted)      │
+              │  bookings (confirmed)   │
+              └─────────────────────────┘
+```
+
+---
+
+## 🗄️ Database Schema
+
+```sql
+-- 👤 Live users on the map
+users
+  ├── id           TEXT PRIMARY KEY      -- device fingerprint
+  ├── name         TEXT
+  ├── role         TEXT  (rider|driver)
+  ├── destination  TEXT
+  ├── vehicle      TEXT
+  ├── eco          BOOLEAN
+  ├── lat          DOUBLE PRECISION
+  ├── lng          DOUBLE PRECISION
+  └── updated_at   TIMESTAMPTZ           -- auto-expires after 60s
+
+-- 🚗 Posted rides
+rides
+  ├── id           UUID PRIMARY KEY
+  ├── driver_id    TEXT → users(id)
+  ├── origin       TEXT
+  ├── destination  TEXT
+  ├── price        NUMERIC
+  ├── seats        INT
+  ├── eco          BOOLEAN
+  ├── vehicle      TEXT
+  ├── depart_at    TIMESTAMPTZ
+  └── created_at   TIMESTAMPTZ
+
+-- 🎫 Bookings
+bookings
+  ├── id           UUID PRIMARY KEY
+  ├── ride_id      UUID → rides(id)
+  ├── rider_id     TEXT → users(id)
+  ├── status       TEXT  (requested|confirmed|done)
+  ├── price        NUMERIC
+  ├── co2_saved_kg NUMERIC
+  ├── money_saved  NUMERIC
+  └── created_at   TIMESTAMPTZ
+```
+
+---
+
+## 🚀 Quick Start
+
+### 1 · Clone & Install
+
 ```bash
+git clone https://github.com/ArifAli8866/ridelink.git
+cd ridelink
 npm install
 ```
-The DB driver `@neondatabase/serverless` and `@vercel/node` are already in `package.json`.
 
-### Step 4 — Add the connection string to Vercel
-1. Go to your project on **[vercel.com](https://vercel.com)**.
-2. **Settings → Environment Variables → Add New**.
-3. Fill in:
-   | Name | Value |
-   |---|---|
-   | `DATABASE_URL` | *(paste your Neon connection string)* |
-4. **Environment**: tick **Production, Preview, and Development** → **Save**.
+### 2 · Set up Neon Database
 
-### Step 5 — Redeploy
-- **Deployments → click the latest → Redeploy** (or just `git push` an empty commit). The serverless functions `api/heartbeat` and `api/nearby` will now have the DB.
+1. Go to **[neon.tech](https://neon.tech)** → Create a free project named `ridelink`
+2. Open **SQL Editor** → paste and run `SCHEMA.sql`
+3. Copy your connection string:
+   ```
+   postgresql://neondb_owner:xxx@ep-xxx.aws.neon.tech/neondb?sslmode=require
+   ```
 
-### Step 6 — Test it 🎉
-1. Open your live Vercel URL on **your phone** (or laptop) → allow location.
-2. Open the **same URL on a second device/browser** (a friend, or an incognito window) → create a *different* profile → allow location.
-3. Within a few seconds you'll see **each other's live marker** on the map and in the "People near you" list. The chip at the top shows **🟢 Live · connected to database**.
+### 3 · Configure Environment
 
-> Both devices must share real GPS (use phones, or move the simulated location). Users automatically disappear ~60s after they close the app.
+```bash
+# .env.local
+DATABASE_URL=postgresql://your-connection-string-here
+```
 
----
+### 4 · Run Locally
 
-## 🔧 Test the database locally (optional)
 ```bash
 npm install -g vercel
-vercel      # links the project
-vercel env pull .env.local   # copies DATABASE_URL locally
-vercel dev  # runs frontend + api/ functions together at localhost:3000
+vercel          # link project
+vercel env pull .env.local
+vercel dev      # runs at localhost:3000
 ```
 
-## 🐛 Troubleshooting
-| Problem | Fix |
-|---|---|
-| Map shows "Preview mode", never "Live" | `DATABASE_URL` not set in Vercel, or you didn't redeploy. Check **Settings → Env Vars** + redeploy. |
-| `DATABASE_URL is not set` error in logs | Env var not added / not saved to all environments. |
-| No other users appear | You need **2+ devices** open at the same time within ~13 km. One phone alone = empty map (that's correct!). |
-| Neon "relation users does not exist" | You skipped **Step 2** — run `SCHEMA.sql` in the SQL Editor. |
-| Build fails on Vercel | Ensure Framework = **Vite**, Output = **dist** (see `vercel.json`, already included). |
+### 5 · Deploy to Vercel
+
+```bash
+git push origin main   # auto-deploys via Vercel GitHub integration
+```
+
+Then add `DATABASE_URL` in **Vercel → Settings → Environment Variables**.
 
 ---
 
-## 🧱 Tech stack
-React 19 · TypeScript · Vite · Tailwind v4 · react-leaflet · `@neondatabase/serverless` serverless functions.
+## 📁 Project Structure
 
-## 📁 Structure
 ```
-api/                    Vercel serverless functions (talk to Neon)
-  _db.ts                  shared Neon SQL client
-  heartbeat.ts            POST live location/profile   →  /api/heartbeat
-  nearby.ts               GET online users near you    →  /api/nearby
-SCHEMA.sql              the DB tables — run once in Neon
-src/
-  lib/api.ts            frontend client (heartbeat, fetchNearby, mapDbUser)
-  lib/geo.ts            distance, sample riders
-  lib/storage.ts        localStorage + device id
-  store.tsx             state, live GPS, DB polling
-  components/           MapView, NearbyPanel, RideDetailModal, PostRideModal,
-                        TripsView, ImpactDashboard, MessagesView, ProfileView, TopBar
+ridelink/
+│
+├── api/                          # Vercel Serverless Functions
+│   ├── heartbeat.ts              # POST live GPS location
+│   ├── nearby.ts                 # GET users within ~13km
+│   ├── rides.ts                  # GET/POST rides
+│   └── bookings.ts               # GET/POST bookings
+│
+├── src/
+│   ├── components/
+│   │   ├── MapView.tsx           # Leaflet map + live GPS dot
+│   │   ├── NearbyPanel.tsx       # List of nearby riders
+│   │   ├── RideDetailModal.tsx   # Ride info + request button
+│   │   ├── PostRideModal.tsx     # Create a new ride
+│   │   ├── TripsView.tsx         # Your ride history
+│   │   ├── ImpactDashboard.tsx   # CO₂ + money saved stats
+│   │   ├── MessagesView.tsx      # In-app messaging
+│   │   ├── ProfileView.tsx       # User profile
+│   │   ├── Onboarding.tsx        # First-time setup
+│   │   └── TopBar.tsx            # Nav + live status chip
+│   │
+│   ├── lib/
+│   │   ├── api.ts                # Frontend API client
+│   │   ├── geo.ts                # Distance calculations
+│   │   └── storage.ts            # localStorage + device ID
+│   │
+│   ├── store.tsx                 # Global state + GPS polling
+│   ├── types.ts                  # TypeScript interfaces
+│   └── App.tsx                   # Root component
+│
+├── SCHEMA.sql                    # Run once in Neon SQL Editor
+├── vercel.json                   # Vercel config
+└── vite.config.ts                # Vite build config
 ```
+
+---
+
+## 🔌 API Reference
+
+### `POST /api/heartbeat`
+Upserts your live location. Called every few seconds automatically.
+```json
+// Request
+{ "id": "device-xyz", "name": "Arif", "role": "driver",
+  "lat": 24.8607, "lng": 67.0011, "destination": "Lahore" }
+
+// Response
+{ "ok": true }
+```
+
+### `GET /api/nearby?lat=&lng=&exclude=`
+Returns online users within ~13km in the last 60 seconds.
+```json
+// Response
+[{ "id": "...", "name": "Sara", "role": "rider", "lat": 24.86, "lng": 67.01 }]
+```
+
+### `POST /api/rides`
+Posts a new ride to the database.
+```json
+// Request
+{ "driver_id": "device-xyz", "origin": "Karachi",
+  "destination": "Lahore", "price": 500, "seats": 3 }
+
+// Response
+{ "id": "uuid", "driver_id": "...", "origin": "Karachi", ... }
+```
+
+### `POST /api/bookings`
+Books a ride.
+```json
+// Request
+{ "ride_id": "uuid", "rider_id": "device-xyz" }
+
+// Response
+{ "id": "uuid", "status": "requested", ... }
+```
+
+---
+
+## 🌍 Impact Tracking
+
+```
+Every completed ride calculates:
+
+  🌱 CO₂ Saved  =  distance_km × 0.21 kg  (avg car emission factor)
+  💰 Money Saved =  distance_km × fuel_cost_per_km ÷ passengers
+  🚗 Trips       =  total bookings with status = 'done'
+
+These are shown live on the Impact Dashboard.
+```
+
+---
 
 ## 🔒 Privacy
-Each device gets a random stable id. Location is shared only while the app is open and auto-expires after 60 seconds. No accounts needed for the MVP.
 
-Made with 💚 for a greener, cheaper commute.
+```
+┌─────────────────────────────────────────────────┐
+│  • No account or signup required                │
+│  • Each device gets a random stable ID          │
+│  • Location shared only while app is open       │
+│  • Location auto-expires after 60 seconds       │
+│  • No personal data stored beyond name + GPS    │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## 🐛 Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| 🔴 Preview mode, never Live | `DATABASE_URL` not set in Vercel → Settings → Env Vars. Redeploy after adding. |
+| No other users appear | You need 2+ devices open at the same time within ~13km |
+| `relation users does not exist` | Run `SCHEMA.sql` in Neon SQL Editor |
+| Rides not saving | Make sure `api/rides.ts` is deployed — check Vercel Functions tab |
+| Build fails | Framework = **Vite**, Output = **dist** in Vercel settings |
+
+---
+
+## 🧱 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 19 · TypeScript · Vite · Tailwind v4 |
+| Map | Leaflet · react-leaflet · OpenStreetMap |
+| Backend | Vercel Serverless Functions |
+| Database | Neon PostgreSQL · `@neondatabase/serverless` |
+| Deployment | Vercel (auto-deploy from GitHub) |
+
+---
+
+## 🤝 Contributing
+
+```bash
+# Fork the repo, create a branch
+git checkout -b feat/your-feature
+
+# Make your changes, then
+git commit -m "feat: your feature description"
+git push origin feat/your-feature
+
+# Open a Pull Request on GitHub
+```
+
+---
+
+<div align="center">
+
+Made with 💚 for a greener, cheaper commute
+
+**[⭐ Star this repo](https://github.com/ArifAli8866/ridelink)** · **[🚀 Live Demo](https://ridelink-mu.vercel.app)** · **[🐛 Report Bug](https://github.com/ArifAli8866/ridelink/issues)**
+
+<br/>
+
+*RideLink — because every empty seat is a missed opportunity*
+
+</div>

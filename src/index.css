@@ -1,0 +1,261 @@
+@import "tailwindcss";
+
+/* ---------- Leaflet (real map) ---------- */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  font-family: inherit;
+  background: #e9eef3;
+  z-index: 0;
+}
+.leaflet-container a {
+  color: #0d9488;
+}
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8) !important;
+  font-size: 10px !important;
+  border-radius: 6px 0 0 0;
+}
+.leaflet-bar,
+.leaflet-control-attribution {
+  box-shadow: none !important;
+}
+
+:root {
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: #eef2f6;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- Scrollbars ---------- */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 999px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ---------- Glass ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* ---------- Animations ---------- */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.7;
+  }
+  80%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 2.6s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes float-blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.08);
+  }
+  66% {
+    transform: translate(-25px, 20px) scale(0.95);
+  }
+}
+.animate-blob {
+  animation: float-blob 16s ease-in-out infinite;
+}
+
+@keyframes radar {
+  0% {
+    transform: scale(0.15);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+.animate-radar {
+  animation: radar 2.1s ease-out infinite;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease both;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-scale-in {
+  animation: scale-in 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dash-move {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+.animate-dash {
+  stroke-dasharray: 10 9;
+  animation: dash-move 24s linear infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+.animate-blink {
+  animation: blink 1.7s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(7px, -5px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.animate-bar {
+  transform-origin: bottom;
+  animation: bar-grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+.stagger > * {
+  opacity: 0;
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.stagger > *:nth-child(1) {
+  animation-delay: 0.04s;
+}
+.stagger > *:nth-child(2) {
+  animation-delay: 0.09s;
+}
+.stagger > *:nth-child(3) {
+  animation-delay: 0.14s;
+}
+.stagger > *:nth-child(4) {
+  animation-delay: 0.19s;
+}
+.stagger > *:nth-child(5) {
+  animation-delay: 0.24s;
+}
+.stagger > *:nth-child(6) {
+  animation-delay: 0.29s;
+}
+.stagger > *:nth-child(7) {
+  animation-delay: 0.34s;
+}
+.stagger > *:nth-child(8) {
+  animation-delay: 0.39s;
+}
